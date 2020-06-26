@@ -11,12 +11,6 @@ urls.forEach(url => {
 
         let summaryGeneral = await playerSummary($);
         let summaryCharacters = await characterSummary($);
-
-        // console.log($('.table-responsive')[0].children[1].children[1].children[1].children[8].children[0].children[0].children[0].attribs.title)
-
-        // $('.table-responsive')[0].children[1].children[1].children.forEach(child => {
-        //    console.log(child); 
-        // });
     }).catch(err => console.log(err));
 });
 
@@ -37,14 +31,10 @@ function playerSummary($) {
 
     let summaryJson = JSON.stringify(summary);
 
-    // console.log(summaryJson);
-
     return summaryJson;
 }
 
 function characterSummary($) {
-
-    // $('.table-responsive')[0].children[1].children[1].children[1].children[8].children[0].children[0].children[0].attribs.title
 
     let characters = []
 
@@ -117,8 +107,6 @@ function characterSummary($) {
         }
 
         characters.push(character);
-
-        console.log(character);
 
     })
     console.log(characters);
