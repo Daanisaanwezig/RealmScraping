@@ -1,20 +1,29 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-let urls = ["https://www.realmeye.com/player/broodman", "https://www.realmeye.com/player/AkhilBeta", "https://www.realmeye.com/player/BlueTv", "https://www.realmeye.com/player/WizAdinek"];
 
-urls.forEach(url => {
-    console.log(url);
+function retrieveWebsite(playerName) {
+    let url = `https://www.realmeye.com/player/${playerName}`;
     axios.get(url, { headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36'} })
-    .then(async (response) => {
+    .then((response) => {
         let $ = cheerio.load(response.data);
 
-        let summaryGeneral = await playerSummary($);
-        let summaryCharacters = await characterSummary($);
-    }).catch(err => console.log(err));
-});
+        return $;
+    }).catch(e => {
+        console.log(`Something went wrong when trying to parse the website, error: ${e}`);
+        return 'parseError';
+    });
+}
 
-function playerSummary($) {
+/* 
+* Expected input: A string that contains the player name
+* @return a json object that contains all basic information found in the top left corner of a realmeye page
+*/
+function playerSummary(playerName) {
+
+    let $ = retrieveWebsite(playerName);
+
+    if ($ == "parseError") { return; } //This error has already been dealth with in the function 'retrieveWebsite'
 
     let summary = {
         characters: [$('.summary')[0].children[0].children[0].children[1].children[0].data],
@@ -34,7 +43,15 @@ function playerSummary($) {
     return summaryJson;
 }
 
-function characterSummary($) {
+/*
+* Expected input: A string that contains the player name
+* @return a array of every character a player has and their respectived stats
+*/
+function characterSummary(playerName) {
+
+    let $ = retrieveWebsite(playerName);
+
+    if ($ == "parseError") { return; } //This error has already been dealth with in the function 'retrieveWebsite'
 
     let characters = []
 
@@ -109,5 +126,5 @@ function characterSummary($) {
         characters.push(character);
 
     })
-    console.log(characters);
+    return(characters);
 }
