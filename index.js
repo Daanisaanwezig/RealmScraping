@@ -1,7 +1,6 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 
-
 function retrieveWebsite(playerName) {
     let url = `https://www.realmeye.com/player/${playerName}`;
     axios.get(url, { headers: {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.111 Safari/537.36'} })
@@ -37,9 +36,7 @@ function playerSummary(playerName) {
         firstSeen: [$('.summary')[0].children[0].children[8].children[1].children[0].data],
         lastSeen: [$('.summary')[0].children[0].children[9].children[1].children[0].data]
     }
-
     let summaryJson = JSON.stringify(summary);
-
     return summaryJson;
 }
 
@@ -48,28 +45,19 @@ function playerSummary(playerName) {
 * @return a array of every character a player has and their respectived stats
 */
 function characterSummary(playerName) {
-
     let $ = retrieveWebsite(playerName);
-
     if ($ == "parseError") { return; } //This error has already been dealth with in the function 'retrieveWebsite'
-
     let characters = []
-
     if (!$('.table-responsive')[0]) { return; }
-
     $('.table-responsive')[0].children[1].children[1].children.forEach(child => {
-
         if (!child.children[9]) { return; }
         if (!child.children[9].children[0].attribs) { return; }
         let purgeJson = JSON.parse(JSON.stringify(child.children[9].children[0].attribs).split('-').join(""));
-        
         let totalStats = purgeJson.datastats.split("[",)[1].split("]")[0].split(",")
         let bonusStats = purgeJson.databonuses.split("[")[1].split("]")[0].split(",")
-
         let Class = child.children[2].children[0].data;
         let classes = require("./classes.json");
         let classStats = classes[Class];
-
         let hp = totalStats[0] - classStats.hp - bonusStats[0];
         let mp = totalStats[1] - classStats.mp - bonusStats[1];
         let att = totalStats[2] - classStats.att - bonusStats[2];
@@ -78,7 +66,6 @@ function characterSummary(playerName) {
         let vit = totalStats[5] - classStats.vit - bonusStats[5];
         let wis = totalStats[6] - classStats.wis - bonusStats[6];
         let dex = totalStats[7] - classStats.dex - bonusStats[7]; 
-
         let character = {
             class: [child.children[2].children[0].data],
             level: [child.children[3].children[0].data],
@@ -122,9 +109,7 @@ function characterSummary(playerName) {
                 dex: dex
             }
         }
-
         characters.push(character);
-
     })
     return(characters);
 }
